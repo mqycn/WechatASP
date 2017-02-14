@@ -52,7 +52,7 @@ class WeChatPay
         if notifyUrl = "" then
             currentUrl =  "http://" & Request.Servervariables("SERVER_NAME") 
             if Request.Servervariables("SERVER_PORT") <> 80 then currentUrl = currentUrl & ":" & Request.Servervariables("SERVER_PORT")
-            if notifyUrl = "" then notifyUrl = currentUrl & "/order/wxapi.asp"
+            notifyUrl = currentUrl & "/order/wxapi.asp"
         end if
         total_fee = total_fee * 100
          
