@@ -12,42 +12,42 @@
 '================================================================
  
 class WeChatPay
-     
-    private AppID
-    private AppSecret
-    private MchID
-    private MchKey
-     
-    private orderAPI
-     
+
+    public AppID
+    public AppSecret
+    public MchID
+    public MchKey
+
+    public orderAPI
+
     public notifyUrl
     public callbackUrl
     public actionName
-     
+
     private BITS_TO_A_BYTE
     private BYTES_TO_A_WORD
     private BITS_TO_A_WORD
-     
+
     public sub Class_Initialize()
-         
+
         AppID       = "AppID"
         AppSecret   = "App密码"
         MchID       = "商户ID"
         MchKey      = "商户密码"
-         
+
         orderAPI    = "https://api.mch.weixin.qq.com/pay/unifiedorder"
         actionName  = "action"
-         
+
         signType    = "MD5"
-         
+
         notifyUrl   = ""
-         
+
         call Md5Initial()
     end sub
-     
+
     public sub Class_Terminate()
     end sub
-     
+
     public function Pay(byval out_trade_no, byval subject, byval body, byval total_fee)
         if notifyUrl = "" then
             currentUrl =  "http://" & Request.Servervariables("SERVER_NAME") 
@@ -55,18 +55,18 @@ class WeChatPay
             notifyUrl = currentUrl & "/order/wxapi.asp"
         end if
         total_fee = total_fee * 100
-         
+
         '支付类型
         trade_type = "NATIVE" 'PC
         userAgent = lcase(Request.Servervariables("HTTP_USER_AGENT"))
         if instr(userAgent, "android") > 0 or instr(userAgent, "iphone") > 0 then
             'trade_type = "JSAPI" '手机可以设置为使用JSAPI支付
         end if
-         
+
         nonce_str = CreateNonceStr()
-         
+
         OrderArr = Array("body=" & subject, "total_fee=" & total_fee, "out_trade_no=" & out_trade_no, "notify_url=" & notifyUrl, "spbill_create_ip=" & Request.Servervariables("REMOTE_ADDR"), "trade_type=" & trade_type, "appid=" & AppID, "mch_id=" & MchID, "nonce_str=" & nonce_str)
-         
+
         '拼接 XML 请求
         dim xmlInfo
         OrderArr = SortPara(OrderArr)
@@ -78,14 +78,14 @@ class WeChatPay
         next
         xmlInfo = xmlInfo & paraToXML("sign=" & Sign(OrderArr))
         xmlInfo = xmlInfo & "</xml>"
-         
+
         if left(actionInfo, 1) = "&" then actionInfo = mid(actionInfo, 2)
-         
+
         result = XMLRequest(orderAPI, xmlInfo)
-         
+
         '分析 请求 结果
         resultPara = XMLToArr(result)
-         
+
         if GetParaValue(resultPara, "return_code") <> "SUCCESS" and GetParaValue(resultPara, "return_msg") <> "OK" then
             resultInfo = GetParaValue(resultPara, "return_msg")
         else
@@ -96,20 +96,20 @@ class WeChatPay
                 resultInfo = "Sign Error"
             end if
         end if
-         
+
         Pay = resultInfo
     end function
-     
+
     public function GetNotify()
-         
+
         '必须通过二进制获取，这是一个大坑
         Set xmldom = Server.CreateObject("MSXML2.DOMDocument") 
         xmldom.load Request.BinaryRead(Request.TotalBytes)
-         
+
         result = xmldom.xml
-         
+
         resultPara = XMLToArr(result)
-         
+
         if GetParaValue(resultPara, "return_code") <> "SUCCESS" and GetParaValue(resultPara, "return_msg") <> "OK" then
             set GetNotify = CreateResult(false, GetParaValue(resultPara, "return_msg"), "", "")
         else
@@ -121,11 +121,11 @@ class WeChatPay
             end if
         end if
     end function
-     
+
     '=====================================================================================
     '  私有方法
     '=====================================================================================
-     
+
     '统一返回结果，和之前的 支付宝接口统一
     private function CreateResult(byval status, byval trade_no, byval total_fee, byval out_trade_no)
         set CreateResult = Server.CreateObject("Scripting.Dictionary")
@@ -138,7 +138,7 @@ class WeChatPay
             call CreateResult.add("total_fee", cSng(total_fee))
         end if
     end function
-     
+
     '签名
     private function Sign(byval paraArr)
         dim signInfo
@@ -151,7 +151,7 @@ class WeChatPay
         signInfo = mid(signInfo, 2)
         Sign = UCase(Md5(signInfo))
     end function
-     
+
     '通过 【请求参数】获取值
     private function GetParaValue(byval paraArr, byval paraName)
         GetParaValue = ""
@@ -162,7 +162,7 @@ class WeChatPay
             end if
         next
     end function
-     
+
     '将XML转换为 【请求参数】
     private function XMLToArr(byval xmlDoc)
         dim paraArr()
@@ -177,7 +177,7 @@ class WeChatPay
         end if
         XMLToArr = paraArr
     end function
-     
+
     '将  【请求参数】 转换为 XML
     private function paraToXML(byval paraItem)
         if instr(paraItem, "=") > 0 then
@@ -188,7 +188,7 @@ class WeChatPay
             paraToXML = ""
         end if
     end function
-     
+
     '将  【请求参数】 排序
     private function SortPara(byval sPara)
         Dim nCount
@@ -211,7 +211,7 @@ class WeChatPay
         Next
         SortPara = sPara
     end function
-     
+
     '创建随机字符串
     private function CreateNonceStr()
         chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -222,8 +222,8 @@ class WeChatPay
             CreateNonceStr = CreateNonceStr & mid(chars, index, 1)
         next
     end function
-     
-     
+
+
     'XML请求，需要使用证书
     '正式说明：http://www.miaoqiyuan.cn/p/asp-wechat-pay 
     private function XMLRequest(byval sUrl, byval xmlBody)
@@ -239,7 +239,7 @@ class WeChatPay
         Set xmlhttp = Nothing
         XMLRequest = xmlget
     end function
-     
+
     '二进制流转换为 XML，这个也是抄的
     private function bin2str(byval binstr)
         Const adTypeBinary = 1
@@ -259,17 +259,17 @@ class WeChatPay
         Set BytesStream = Nothing
         bin2str = StringReturn
     end function
-     
+
     '=====================================================================================
     '  MD5，下边都是抄的，不用看了
     '=====================================================================================
-     
+
     private Sub Md5Initial()
         BITS_TO_A_BYTE = 8
         BYTES_TO_A_WORD = 4
         BITS_TO_A_WORD = 32
     End Sub
-     
+
     Private m_lOnBits(30)  
     Private m_l2Power(30)  
     Private Function LShift(lValue, iShiftBits)  
