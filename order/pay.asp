@@ -56,7 +56,7 @@
             <div class="form-group">
               <label for="o_money" class="col-sm-4 control-label">订单金额</label>
               <div class="col-sm-8">
-                <i><b><%=o_money %></b>元</i>
+                <i><span class="glyphicon glyphicon-yen"></span><b><%=o_money %></b>元</i>
               </div>
             </div>
             <div class="form-group">
