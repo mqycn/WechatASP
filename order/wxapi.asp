@@ -1,5 +1,12 @@
+<%	@codepage = 65001 %>
 <%
-	@codepage = 65001
+'================================================================
+'=   文件名称：wxapi.asp                                        =
+'=   实现功能：微信对接（所有微信调用都通过这里实现）           =
+'=   作者主页：http://www.miaoqiyuan.cn/index.html              =
+'=   最新版本：http://git.oschina.net/mqycn/WechatASP           =
+'=   联系邮箱：mqycn@126.com;                                   =
+'================================================================
 %>
 <!--#include file="conn.asp"-->
 <!--#include file="../core/WeChatPay.asp"-->
@@ -7,6 +14,7 @@
 <%
 
 	orderNo = Request.QueryString("order_no")
+	if not isnumeric(orderNo) then orderNo = 0
 	
 	Select Case Request.QueryString("payType")
 		Case "ajax"
@@ -72,7 +80,7 @@
 	'=============================================================================================
 	function GetOrderInfo(byref orderRecordSet, byval orderStatus, byval tradeNo)
 		set orderRecordSet = Server.CreateObject("Adodb.RecordSet")
-		orderRecordSet.open "select * from orderinfo where o_status=" & orderStatus & " and o_order_no='" & orderNo & "'", Conn, 3, 2
+		orderRecordSet.open "select * from orderinfo where o_paytype='weixin' and o_status=" & orderStatus & " and o_order_no='" & orderNo & "'", Conn, 3, 2
 		if orderRecordSet.eof then
 			orderRecordSet.close
 			GetOrderInfo = false
