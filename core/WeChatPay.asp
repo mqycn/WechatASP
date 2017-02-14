@@ -93,7 +93,7 @@ class WeChatPay
             if Sign(resultPara) = GetParaValue(resultPara, "sign") then
                 resultInfo = GetParaValue(resultPara, "code_url")
             else
-                resultInfo = "Sign Error"
+                resultInfo = "Sign Error," & GetParaValue(resultPara, "err_code_des")
             end if
         end if
 

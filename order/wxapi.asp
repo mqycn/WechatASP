@@ -62,7 +62,7 @@
 					response.write "<return_code>SUCCESS</return_code><return_msg>OK</return_msg>"
 				else
 					'没有等待确认的订单，一般修改为成功，不让微信继续通知
-					response.write "<return_code>SUCCESS</return_code><return_msg>OK</return_msg><info>OrderError</info>"
+					response.write "<return_code>SUCCESS</return_code><return_msg>OK</return_msg><info>OrderError:" & out_trade_no & "</info>"
 				end if
 			end if
 			
@@ -78,7 +78,7 @@
 	Conn.Close
 	
 	'=============================================================================================
-	function GetOrderInfo(byref orderRecordSet, byval orderStatus, byval tradeNo)
+	function GetOrderInfo(byref orderRecordSet, byval orderStatus, byval orderNo)
 		set orderRecordSet = Server.CreateObject("Adodb.RecordSet")
 		orderRecordSet.open "select * from orderinfo where o_paytype='weixin' and o_status=" & orderStatus & " and o_order_no='" & orderNo & "'", Conn, 3, 2
 		if orderRecordSet.eof then
