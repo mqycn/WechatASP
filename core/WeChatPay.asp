@@ -103,12 +103,15 @@ class WeChatPay
     public function GetNotify()
 
         '必须通过二进制获取，这是一个大坑
+        '二进制获取，只能获取一次
+        '   如果需要读取获取的XML，在调用GetNotify之前增加 dim RESULT_XML
+        '   然后通过 RESULT_XML 即可获取 请求的XML
         Set xmldom = Server.CreateObject("MSXML2.DOMDocument") 
         xmldom.load Request.BinaryRead(Request.TotalBytes)
+        RESULT_XML = xmldom.xml
+        Set xmldom = Nothing
 
-        result = xmldom.xml
-
-        resultPara = XMLToArr(result)
+        resultPara = XMLToArr(RESULT_XML)
 
         if GetParaValue(resultPara, "return_code") <> "SUCCESS" and GetParaValue(resultPara, "return_msg") <> "OK" then
             set GetNotify = CreateResult(false, GetParaValue(resultPara, "return_msg"), "", "")
