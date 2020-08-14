@@ -2,9 +2,9 @@
 '================================================================
 '=   文件名称：footer.asp                                       =
 '=   实现功能：公共底部                                         =
-'=   作者主页：http://www.miaoqiyuan.cn/index.html              =
-'=   最新版本：http://git.oschina.net/mqycn/WechatASP           =
-'=   联系邮箱：mqycn@126.com;                                   =
+'=   作者主页：http://www.miaoqiyuan.cn/                        =
+'=   最新版本：https://gitee.com/mqycn/WechatASP                =
+'=   联系邮箱：mqycn@126.com                                    =
 '================================================================
 %>
 </body>

@@ -3,9 +3,9 @@
 '================================================================
 '=   文件名称：wxapi.asp                                        =
 '=   实现功能：微信对接（所有微信调用都通过这里实现）           =
-'=   作者主页：http://www.miaoqiyuan.cn/index.html              =
-'=   最新版本：http://git.oschina.net/mqycn/WechatASP           =
-'=   联系邮箱：mqycn@126.com;                                   =
+'=   作者主页：http://www.miaoqiyuan.cn/                        =
+'=   最新版本：https://gitee.com/mqycn/WechatASP                =
+'=   联系邮箱：mqycn@126.com                                    =
 '================================================================
 %>
 <!--#include file="conn.asp"-->
@@ -49,9 +49,15 @@
 			if result.item("status") = false then
 				response.write result.item("message")
 			else
-				out_trade_no = result.item("out_trade_no")
-				total_fee = result.item("total_fee")
-				trade_no = result.item("trade_no")
+				out_trade_no = result.item("out_trade_no") '订单号
+				total_fee = result.item("total_fee") '分
+				trade_no = result.item("trade_no") '官方订单号
+				'fee_type = result.item("fee_type") 'CNY
+				'is_subscribe = result.item("is_subscribe") '是否订阅服务号 Y/N
+				'mch_id = result.item("mch_id") '商户ID
+				'openid = result.item("openid") 'OpenId
+				'time_end = result.item("time_end") 'time_end
+				'trade_type = result.item("trade_type") '支付类型：PC:NATIVE、H5:MWEB、服务号小程序:JSAPI
 				if GetOrderInfo(OrderRs, 1, out_trade_no) then
 					'调整订单状态为支付完成
 					OrderRs("o_trade_no") = trade_no
@@ -59,16 +65,16 @@
 					OrderRs("o_status") = 2
 					OrderRs.update
 					OrderRs.close
-					response.write "<return_code>SUCCESS</return_code><return_msg>OK</return_msg>"
+					response.write "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>"
 				else
 					'没有等待确认的订单，一般修改为成功，不让微信继续通知
-					response.write "<return_code>SUCCESS</return_code><return_msg>OK</return_msg><info>OrderError:" & out_trade_no & "</info>"
+					response.write "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg><info>OrderError:" & out_trade_no & "</info></xml>"
 				end if
 			end if
 			
 			'记录日志
 			set fso = server.createobject("Scripting.FileSystemObject")
-			set fto = fso.createtextfile(server.mappath("/order/log/" & resultType & "_log_" & out_trade_no & "_" & timer() & ".txt"))
+			set fto = fso.createtextfile(server.mappath("log/" & resultType & "_log_" & out_trade_no & "_" & timer() & ".txt"))
 			fto.write(now() & vbCrlf & request.querystring & vbCrlf & RESULT_XML)
 			fto.close
 			set fso = nothing

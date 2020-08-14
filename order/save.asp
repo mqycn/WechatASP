@@ -2,9 +2,9 @@
 '================================================================
 '=   文件名称：save.asp                                         =
 '=   实现功能：提交订单                                         =
-'=   作者主页：http://www.miaoqiyuan.cn/index.html              =
-'=   最新版本：http://git.oschina.net/mqycn/WechatASP           =
-'=   联系邮箱：mqycn@126.com;                                   =
+'=   作者主页：http://www.miaoqiyuan.cn/                        =
+'=   最新版本：https://gitee.com/mqycn/WechatASP                =
+'=   联系邮箱：mqycn@126.com                                    =
 '================================================================
 %>
 <!--#include file="conn.asp"-->
@@ -30,7 +30,8 @@
 		%><!DOCTYPE html><html lang="zh-CN"><head><meta charset="gb2312"><script>alert('<% =replace(errMsg, ";", "\n") %>');history.go(-1);</script></head></html><%
 		response.end
 	end if
-	o_order_no = year(now()) & month(now()) & day(now()) & hour(now()) & minute(now()) & second(now()) & cLng(timer())
+	randomize
+	o_order_no = year(now()) & month(now()) & day(now()) & hour(now()) & minute(now()) & second(now()) & cLng(rnd() * 10000)
 	o_status = 1
 	rs.Open "select * from orderinfo", conn, 3, 2
 	rs.addnew
